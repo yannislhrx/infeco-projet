@@ -15,7 +15,7 @@ class TestController extends AbstractController
     {
         $test_var = 'je suis var de tewt';
 
-        return $this->render('test/index.html.twig', [
+        return $this->render('administration/index.html.twig', [
             'controller_name' => 'TestController',
             'test_var' => $test_var,
         ]);
