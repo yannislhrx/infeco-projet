@@ -5,4 +5,15 @@
 test:
     path: /test
     controller: App\Controller\TestController::index
+liste-locataire:
+    path: /liste-locataire
+    controller: App\Controller\LocataireController::getLocataires
+
+liste-appartement:
+    path: /liste-appartement
+    controller: App\Controller\AppartementController::getAppartements
+ajout-appartement:
+    path: /ajout-appartement
+    controller: App\Controller\AppartementController::create
+
 

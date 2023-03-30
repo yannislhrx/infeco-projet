@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste Locataires{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: red; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1> Liste appartements</h1>
+
+    
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">adresse</th>
+            <th scope="col">complement</th>
+            <th scope="col">Ville</th>
+            <th scope="col">code postale</th>
+            <th scope="col">loyer</th>
+            <th scope="col">charges</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for ap in appartements %}
+          <tr>
+            <td>{{ ap.id }}</td>
+            <td>{{ ap.adresse }}</td>
+            <td>{{ ap.complement }}</td>
+            <td>{{ ap.ville }}</td>
+            <td>{{ ap.codepostal }}</td>
+            <td>{{ ap.loyer }}</td>
+            <td>{{ ap.charges }}</td>
+          
+          </tr>
+        {% endfor %}
+           
+        </tbody>
+    </table>
+    
+
+     <ul>
+      
+    </ul>
+</div>
+{% endblock %}
