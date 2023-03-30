@@ -11,7 +11,12 @@ class AppartementTest extends KernelTestCase
         self::bootKernel();
 
         $appartement = new Appartement();
-       
+        $appartement->setAdresse('Test Name');
+        $appartement->setComplement('Test Description');
+        $appartement->setVille('Test ville');
+        $appartement->setCodePostal('Test cp');
+        $appartement->setLoyer(500);
+        $appartement->setCharges(500);
 
         $entityManager = self::$container->get('doctrine')->getManager();
         $entityManager->persist($appartement);
