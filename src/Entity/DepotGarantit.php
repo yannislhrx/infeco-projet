@@ -32,6 +32,11 @@ class DepotGarantit
      */
     private $somme;
 
+      /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $etat;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class DepotGarantit
     public function setSomme(float $somme): self
     {
         $this->somme = $somme;
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): self
+    {
+        $this->etat = $etat;
 
         return $this;
     }

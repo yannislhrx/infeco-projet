@@ -1,0 +1,387 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste Locataires
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: red;
+			padding: 2px 6px;
+		}
+	</style>
+
+	
+
+	<div class="container">
+
+		<div class="mt-5 mb-5 ">
+			<h1>
+				Fiche Appartement
+			</h1>
+
+			<a href="reinitAppart">Vider l'appartement</a>
+
+
+		</div>
+
+		<div class="row">
+
+			<div class="col-7">
+				<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card-header">
+						<h3>Informations</h3>
+					</div>
+
+					<div class="card-body row">
+						<div class="col-6">
+
+
+							<img src="{{ asset('images/wall-g622c3044c_1280.jpg') }}" alt="appartement" width="100%">
+
+
+						</div>
+						<div class="col-6 mt-5">
+
+							<ul>
+								<li>
+									<span class="bold">Adresse :
+									</span>
+									{{ appartement.adresse }}</li>
+								<li>
+									<span class="bold">Complement :
+									</span>
+									{{ appartement.complement }}</li>
+								<li>
+									<span class="bold">Ville :
+									</span>
+									{{ appartement.ville }}</li>
+								<li>
+									<span class="bold">Code postal :
+									</span>
+									{{ appartement.codePostal }}</li>
+								<li>
+									<span class="bold">Loyer :
+									</span>
+									{{ appartement.loyer }}</li>
+								<li>
+									<span class="bold">Charges :
+									</span>
+									{{ appartement.charges }}</li>
+
+							</ul>
+
+
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+
+			<div class="col-5">
+
+
+				<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card-header">
+						<h3>Locataire</h3>
+					</div>
+
+					<div class="card-body">
+
+						{% if infosLocataires != null %}
+
+							<p>
+								<span class="bold">
+									Locataires actuel :
+								</span>
+								{{infosLocataires.nom}}
+								{{infosLocataires.prenom}}
+
+								<a href="/fiche-locataire/{{infosLocataires.id}}">
+									<i class="fas fa-circle-info"></i>
+								</a>
+
+
+								<a href="/delete-locAppart/{{appartement.id}}">
+									<i class="fas fa-trash"></i>
+								</a>
+							</p>
+
+
+						{% else %}
+							<p>
+								<span class="bold">
+									Aucun Locataire dans ce logement.
+								</span>
+							</p>
+							<form method="POST" action="/fiche-appartement/{{appartement.id}}" class="row g-3">
+
+								<label for="inputLocap" class="form-label">Séléctionner un locataire à ajouter à cet appartement</label>
+
+
+								<div class="col-12">
+									<select id="inputLocap" class="form-select" name="select">
+
+										<option value="" selected></option>
+
+										{% for loc in locataires %}
+											<option value="{{ loc.id }}">{{ loc.nom }}</option>
+										{% endfor %}
+
+
+									</select>
+
+								</div>
+
+
+								<div class="col-12">
+									<button type="submit" class="btn btn-success">Valider</button>
+								</div>
+
+
+							</form>
+						{% endif %}
+						{#  #}
+
+
+						{#  #}
+					</div>
+
+
+				</div>
+			</div>
+
+
+			{# etat lieux #}
+			<div class="col-7">
+				<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card-header">
+						<h3>Etat des lieux</h3>
+					</div>
+
+					<div class="card-body row">
+
+						{% if infosLocataires != null %}
+
+
+							<h4>
+								<span class="bold">
+									Entrée
+								</span>
+							</h4>
+
+
+							{% if etatDesLieuxE != null %}
+								<h5>
+									<span class="text-muted">
+										Modifier l'etat des lieux existant pour ce locataire
+									</span>
+								</h5>
+
+
+								<form class="row g-3 mb-5" method="POST" action="/modifier-etat-lieux/{{infosLocataires.id}}&{{appartement.id}}&{{etatDesLieuxE[0].id}}">
+									<input type="hidden" value="entree" name="entree">
+
+									<div class="col-md-6">
+										<label class="form-label">Date</label>
+										<input type="date" name="date_etat" class="form-control" value="{{ etatDesLieuxE[0].date|date('Y-m-d') }}">
+									</div>
+									<div class="col-md-12">
+										<label for="remarque" class="form-label">Remarques</label>
+										<textarea name="remarque" id="remarque" cols="30" rows="10" class="form-control">{{etatDesLieuxE[0].remarque}}</textarea>
+									</div>
+
+									<div class="col-12">
+										<button type="submit" class="btn btn-warning" name="modifier_etat" value="1">Modifier</button>
+										<button type="submit" class="btn btn-danger" name="supprimer_etat" value="1">Supprimer</button>
+									</div>
+								</form>
+
+
+								{% if etatDesLieuxS != null %}
+									<h4>
+										<span class="bold">
+											Sortie
+										</span>
+									</h4>
+									<h5>
+										<span class="text-muted">
+											Modifier l'etat des lieux existant pour ce locataire
+										</span>
+									</h5>
+									<form class="row g-3" method="POST" action="/modifier-etat-lieux-sortie/{{infosLocataires.id}}&{{appartement.id}}&{{etatDesLieuxS[0].id}}">
+										<input type="hidden" value="sortie" name="sortie">
+
+										<div class="col-md-6">
+											<label class="form-label">Date</label>
+											<input type="date" name="date_etatS" class="form-control" value="{{ etatDesLieuxS[0].date|date('Y-m-d') }}">
+										</div>
+										<div class="col-md-12">
+											<label for="remarqueS" class="form-label">Remarques</label>
+											<textarea name="remarqueS" id="remarqueS" cols="30" rows="10" class="form-control">{{etatDesLieuxS[0].remarque}}</textarea>
+										</div>
+
+										<div class="col-12">
+											<button type="submit" class="btn btn-warning" name="modifier_etatS" value="1">Modifier</button>
+											<button type="submit" class="btn btn-danger" name="supprimer_etat" value="1">Supprimer</button>
+
+										</div>
+									</form>
+
+								{% else %}
+									<h4>
+										<span class="bold">
+											Sortie
+										</span>
+									</h4>
+
+									<h5>
+										<span class="text-muted">
+											Ajout un état des lieux existant pour ce locataire
+										</span>
+									</h5>
+									<form class="row g-3" method="POST" action="/ajout-etat-lieux-sortie/{{infosLocataires.id}}&{{appartement.id}}">
+										<input type="hidden" value="sortie" name="sortie">
+
+										<div class="col-md-6">
+											<label class="form-label">Date</label>
+											<input type="date" name="date_etatS" class="form-control">
+										</div>
+										<div class="col-md-12">
+											<label for="remarqueS" class="form-label">Remarques</label>
+											<textarea name="remarqueS" id="remarqueS" cols="30" rows="10" class="form-control"></textarea>
+										</div>
+
+										<div class="col-12">
+											<button type="submit" class="btn btn-success" name="valider_etatS" value="1">Valider</button>
+										</div>
+									</form>
+
+								{% endif %}
+
+							{% else %}
+								<h5>
+									<span class="text-muted">
+										Ajout un état des lieux existant pour ce locataire
+									</span>
+								</h5>
+
+								<form class="row g-3 mb-5" method="POST" action="/ajout-etat-lieux-entree/{{infosLocataires.id}}&{{appartement.id}}">
+									<input type="hidden" value="entree" name="entree">
+
+									<div class="col-md-6">
+										<label class="form-label">Date</label>
+										<input type="date" name="date_etat" class="form-control">
+									</div>
+									<div class="col-md-12">
+										<label for="remarque" class="form-label">Remarques</label>
+										<textarea name="remarque" id="remarque" cols="30" rows="10" class="form-control"></textarea>
+									</div>
+
+									<div class="col-12">
+										<button type="submit" class="btn btn-success" name="valider_etat" value="1">Valider</button>
+									</div>
+								</form>
+
+
+							{% endif %}
+
+
+						{% else %}
+
+							<p>
+								<span class="bold">
+									Aucun Locataire dans ce logement.
+								</span>
+							</p>
+
+
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-5">
+
+			<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card-header">
+						<h3>Dépot de garantie</h3>
+					</div>
+
+					<div class="card-body">
+
+						{% if infosLocataires != null %}
+
+				
+						{% if depotGarantie != null %}
+
+								<form class="row g-3" method="POST" action="/modifier-depot-garantie/{{infosLocataires.id}}&{{appartement.id}}&{{depotGarantie[0].id}}">
+
+										<div class="col-md-6">
+											<label class="form-label">Somme versée</label>
+											<input type="number" name="somme" min="0"  class="form-control" value="{{depotGarantie[0].somme}}">
+										</div>
+										
+
+										<div class="col-12">
+											<button type="submit" class="btn btn-warning" name="modifier_depot" value="1">Modifier</button>
+											<button type="submit" class="btn btn-danger" name="supprimer_depot" value="1">Supprimer</button>
+										</div>
+									</form>
+
+
+						{% else %}
+
+
+						
+
+							<form class="row g-3" method="POST" action="/ajout-depot-garantie/{{infosLocataires.id}}&{{appartement.id}}">
+
+										<div class="col-md-6">
+											<label class="form-label">Somme versée</label>
+											<input type="number" name="somme" min="0"  class="form-control">
+										</div>
+										
+
+										<div class="col-12">
+											<button type="submit" class="btn btn-success" name="valider_depot" value="1">Valider</button>
+										</div>
+									</form>
+						{% endif %}
+						
+
+
+						{% else %}
+							<p>
+								<span class="bold">
+									Aucun Locataire dans ce logement.
+								</span>
+							</p>
+							
+						{% endif %}
+						{#  #}
+
+
+						{#  #}
+					</div>
+
+
+				</div>
+			
+			
+			</div>
+
+
+		</div>
+	</div>
+
+
+{% endblock %}

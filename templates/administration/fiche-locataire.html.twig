@@ -1,0 +1,300 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste Locataires
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: red;
+			padding: 2px 6px;
+		}
+	</style>
+
+
+	<div class="container">
+
+		<div class="mt-5 mb-5 ">
+			<h1>
+				Fiche Locataire
+			</h1>
+
+
+		</div>
+
+		<div class="row">
+
+			<div class="col-6 row">
+				<div class="col-12">
+					<div class="card shadow-lg   bg-body ">
+						<div class="card-header">
+							<h3>Informations</h3>
+						</div>
+
+						<div class="card-body">
+
+							<ul>
+								<li>
+									<span class="bold">Nom :
+									</span>
+									{{ locataire.nom }}</li>
+								<li>
+									<span class="bold">Prénom :
+									</span>
+									{{ locataire.prenom }}</li>
+								<li>
+									<span class="bold">Email :
+									</span>
+									{{ locataire.mail }}</li>
+								<li>
+									<span class="bold">Téléphone :
+									</span>
+									{{ locataire.tel }}</li>
+
+							</ul>
+
+
+						</div>
+
+
+					</div>
+				</div>
+
+				{# etat Lieux #}
+
+				<div class="col-12">
+
+
+					<div class="card shadow-lg  mb-5 bg-body ">
+						<div class="card-header">
+							<h3>Etat des Lieux</h3>
+						</div>
+
+						<div class="card-body">
+
+							{% if etatLieux != null %}
+								{% for etat in etatLieux %}
+									<p>
+										<span class="bold">Pour l'appartement
+											{{etat.idAppartement}}
+											:
+										</span>
+									</p>
+									{% if etat.quand == 'entree' %}
+										<p>
+											<span class="bold">Entrée :
+											</span>
+										</p>
+
+										<ul>
+											<li>
+												<span class="bold">Date :
+												</span>
+												{{ etat.date|date("d-m-y") }}
+											</li>
+											<li>
+												<span class="bold">Remarques :
+												</span>
+												{{ etat.remarque }}</li>
+
+
+										</ul>
+
+									{% endif %}
+									{% if etat.quand == 'sortie' %}
+										<p>
+											<span class="bold">Sortie :
+											</span>
+										</p>
+
+										<ul>
+											<li>
+												<span class="bold">Date :
+												</span>
+												{{ etat.date|date("d-m-y") }}
+											</li>
+											<li>
+												<span class="bold">Remarques :
+												</span>
+												{{ etat.remarque }}</li>
+
+
+										</ul>
+
+									{% endif %}
+
+								{% endfor %}
+							{% else %}
+								<p class="text-center">
+									<span class="bold">
+										Aucun état des lieux pour ce locataire.
+									</span>
+								</p>
+
+							{% endif %}
+
+						</div>
+
+
+					</div>
+				</div>
+
+
+				{#  #}
+
+
+			</div>
+
+
+			<div class="col-6 row">
+				<div class="col-12">
+
+
+					<div class="card shadow-lg   bg-body ">
+						<div class="card-header">
+							<h3>Appartement</h3>
+						</div>
+
+						<div class="card-body">
+
+							{% if appartement != null %}
+								{% for ap in appartement %}
+
+									<p>
+										<span class="bold">Appartement Occupé :
+										</span>
+									</p>
+
+									<ul>
+										<li>
+											<span class="bold">Adresse :
+											</span>
+											{{ ap.adresse }}</li>
+										<li>
+											<span class="bold">Complément :
+											</span>
+											{{ ap.complement }}</li>
+										<li>
+											<span class="bold">Ville :
+											</span>
+											{{ ap.ville }}</li>
+										<li>
+											<span class="bold">Code Postal :
+											</span>
+											{{ ap.codePostal }}</li>
+										<li>
+											<span class="bold">Loyer :
+											</span>
+											{{ ap.loyer }}</li>
+										<li>
+											<span class="bold">Charges :
+											</span>
+											{{ ap.charges }}</li>
+
+									</ul>
+
+
+								{% endfor %}
+							{% else %}
+								<p class="text-center">
+									<span class="bold">
+										Aucun appartement pour ce locataire.
+									</span>
+								</p>
+
+							{% endif %}
+
+						</div>
+
+
+					</div>
+				</div>
+
+
+				{# depot garantie #}
+
+				<div class="col-12">
+
+
+					<div class="card shadow-lg  mt-5 mb-5 bg-body ">
+						<div class="card-header">
+							<h3>Dépot de garantie</h3>
+						</div>
+
+						<div class="card-body">
+
+							{% if depotGarantie != null %}
+								{% for dep in depotGarantie %}
+									<p>
+										<span class="bold">Pour l'appartement
+											{{dep.idAppartement}}
+											:
+										</span>
+										{{dep.somme}}
+										€
+
+									</p>
+
+
+								{% endfor %}
+							{% else %}
+								<p class="text-center">
+									<span class="bold">
+										Aucun Dépot de garantie pour ce locataire.
+									</span>
+								</p>
+
+							{% endif %}
+
+						</div>
+
+
+					</div>
+				</div>
+
+			</div>
+
+
+			{# Paiement  #}
+
+			<div class="col-12">
+
+
+				<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card-header">
+						<h3>Liste des paiements</h3>
+					</div>
+
+					<div class="card-body">
+
+						{% if depotGarantie != null %}
+							<span class="bold">
+								Aucun paiement pour ce locataire.
+							</span>
+						{% else %}
+							<p class="text-center">
+								<span class="bold">
+									Aucun paiement pour ce locataire.
+								</span>
+							</p>
+
+						{% endif %}
+
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+
+
+	</div>
+
+{% endblock %}

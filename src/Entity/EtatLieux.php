@@ -18,7 +18,7 @@ class EtatLieux
     private $id;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", nullable=true)
      */
     private $date;
 
@@ -28,19 +28,23 @@ class EtatLieux
     private $remarque;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $quand;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $id_locataire;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $id_appartement;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $etat;
 
     public function getId(): ?int
     {
@@ -103,6 +107,18 @@ class EtatLieux
     public function setIdAppartement(int $id_appartement): self
     {
         $this->id_appartement = $id_appartement;
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): self
+    {
+        $this->etat = $etat;
 
         return $this;
     }

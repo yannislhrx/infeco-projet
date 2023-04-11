@@ -1,3 +1,7 @@
+body{
+    font-size: 18px;
+}
+
 header {
     background-color: #333;
     color: #fff;
@@ -24,3 +28,20 @@ nav a {
 nav a:hover {
     text-decoration: underline;
 }
+
+.light-green {
+    background: #1FAE0A29;
+}
+.light-red {
+    background: #e13f3f4f;
+}
+.light-orange {
+    background: #ffa5006e;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+
+

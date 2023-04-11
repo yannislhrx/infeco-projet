@@ -15,6 +15,16 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+# doctrine:
+#     dbal:
+#         driver: 'pdo_pgsql'
+#         server_version: '13'
+#         charset: utf8
+#         default_table_options:
+#             charset: utf8
+#             collate: utf8_unicode_ci
+#         url: '%env(resolve:DATABASE_URL)%'
+
 
 when@test:
     doctrine:
@@ -41,3 +51,5 @@ when@prod:
                     adapter: cache.app
                 doctrine.system_cache_pool:
                     adapter: cache.system
+
+

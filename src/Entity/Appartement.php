@@ -47,6 +47,22 @@ class Appartement
      */
     private $charges;
 
+    /**
+     * @ORM\Column(type="integer",nullable=true)
+     */
+    private $idAgence;
+
+    /**
+     * @ORM\Column(type="string",nullable=true)
+     */
+    private $idStrLocataires;
+    /**
+     * @ORM\Column(type="integer",nullable=true)
+     */
+    private $etat;
+
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +136,40 @@ class Appartement
     public function setCharges(float $charges): self
     {
         $this->charges = $charges;
+
+        return $this;
+    }
+
+    public function getIdAgence(): ?int
+    {
+        return $this->idAgence;
+    }
+
+    public function setIdAgence(int $idAgence): self
+    {
+        $this->idAgence = $idAgence;
+
+        return $this;
+    }
+    public function getIdStrLocataires(): ?string
+    {
+        return $this->idStrLocataires;
+    }
+
+    public function setIdStrLocataires(string $idStrLocataires): self
+    {
+        $this->idStrLocataires = $idStrLocataires;
+
+        return $this;
+    }
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): self
+    {
+        $this->etat = $etat;
 
         return $this;
     }

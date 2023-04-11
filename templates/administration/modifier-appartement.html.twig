@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste appartements{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: red; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1> Modifier appartement</h1>
+
+    {{dump(appartement)}}
+
+
+ (}{wVJtJ7DPD
+
+ 
+
+  <form method="post" action="/modifier-appartement/{{appartement.id}}">
+     <label for="adresse">adresse</label>
+    <input type="text" name="adresse" id="adresse" value="{{appartement.adresse}}" required>
+
+    <label for="complement">complement</label>
+    <input type="text" name="complement" id="complement" value="{{appartement.complement}}" >
+
+    <label for="ville ">Ville</label>
+    <input type="text" name="ville" id="ville" value="{{appartement.ville}}" required>
+
+    <label for="code_postal">Code Postal</label>
+    <input type="text" name="code_postal" id="code_postal" value="{{appartement.codePostal}}" required>
+
+
+    <label for="loyer">Loyer</label>
+    <input type="number" min="0" name="loyer" id="loyer" value="{{appartement.loyer}}" required>
+
+    <label for="charges">charges</label>
+    <input type="number" min="0" name="charges" id="charges" value="{{appartement.charges}}" required>
+
+    
+       <button type="submit" value="1" name="modifierAppartement">Modifier</button>
+  </form>
+    
+
+</div>
+{% endblock %}

@@ -5,15 +5,93 @@
 test:
     path: /test
     controller: App\Controller\TestController::index
+
+
+# Locataire
+
 liste-locataire:
     path: /liste-locataire
     controller: App\Controller\LocataireController::getLocataires
 
+ajout-locataire:
+    path: /ajout-locataire
+    controller: App\Controller\LocataireController::create
+
+    
+delete-locataire:
+  path: /delete-locataire/{id}
+  controller: App\Controller\LocataireController::deleteLocataire
+  methods: GET
+
+modifier-locataire:
+  path: /modifier-locataire/{id}
+  controller: App\Controller\LocataireController::modifierLocataire
+
+fiche-locataire:
+  path: /fiche-locataire/{id}
+  controller: App\Controller\LocataireController::ficheLocataire
+  methods: GET
+
+
+#   appartement
+
 liste-appartement:
     path: /liste-appartement
     controller: App\Controller\AppartementController::getAppartements
+
 ajout-appartement:
     path: /ajout-appartement
     controller: App\Controller\AppartementController::create
+
+delete-appartement:
+  path: /delete-appartement/{id}
+  controller: App\Controller\AppartementController::deleteAppartement
+  methods: GET
+
+modifier-appartement:
+  path: /modifier-appartement/{id}
+  controller: App\Controller\AppartementController::modifierAppartement
+
+fiche-appartement:
+  path: /fiche-appartement/{id}
+  controller: App\Controller\AppartementController::ficheAppartement
+
+delete-locAppart:
+  path: delete-locAppart/{id}
+  controller: App\Controller\AppartementController::deleteLocAppart
+
+
+#etat des lieux
+ajout-etat-lieux-entree: 
+  path: /ajout-etat-lieux-entree/{id_locataire}&{id_appartement}
+  controller: App\Controller\AppartementController::ajoutEtat
+
+ajout-etat-lieux-sortie: 
+  path: /ajout-etat-lieux-sortie/{id_locataire}&{id_appartement}
+  controller: App\Controller\AppartementController::ajoutEtatSortie
+
+modifier-etat-lieux: 
+  path: /modifier-etat-lieux/{id_locataire}&{id_appartement}&{id_etat}
+  controller: App\Controller\AppartementController::modifierEtat
+
+modifier-etat-lieux-sortie: 
+  path: /modifier-etat-lieux-sortie/{id_locataire}&{id_appartement}&{id_etat}
+  controller: App\Controller\AppartementController::modifierEtatSortie
+
+
+
+#  depot garantie
+ajout-depot-garantie: 
+  path: /ajout-depot-garantie/{id_locataire}&{id_appartement}
+  controller: App\Controller\AppartementController::ajoutDepotGarantie
+
+modifier-depot-garantie: 
+    path: /modifier-depot-garantie/{id_locataire}&{id_appartement}&{id_depot}
+    controller: App\Controller\AppartementController::modifierDepotGarantie
+
+
+
+
+
 
 
