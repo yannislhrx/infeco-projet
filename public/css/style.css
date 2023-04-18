@@ -43,5 +43,14 @@ nav a:hover {
     font-weight: bold;
 }
 
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    color: black;
+    font-weight: bold;
+}
+
 
 

@@ -57,8 +57,14 @@ fiche-appartement:
   controller: App\Controller\AppartementController::ficheAppartement
 
 delete-locAppart:
-  path: delete-locAppart/{id}
+  path: /delete-locAppart/{id}
   controller: App\Controller\AppartementController::deleteLocAppart
+
+reinit-appartement: 
+  path: /reinit-appartement/{id_appartement}
+  controller: App\Controller\AppartementController::reinitAppartement
+
+
 
 
 #etat des lieux
@@ -88,6 +94,28 @@ ajout-depot-garantie:
 modifier-depot-garantie: 
     path: /modifier-depot-garantie/{id_locataire}&{id_appartement}&{id_depot}
     controller: App\Controller\AppartementController::modifierDepotGarantie
+
+    # paiement
+
+ajout-paiement: 
+  path: /ajout-paiement/{id_locataire}
+  controller: App\Controller\LocataireController::ajoutPaiement
+
+modifier-paiement: 
+  path: /modifier-paiement/{id_locataire}&{id_paiement}
+  controller: App\Controller\LocataireController::modifierPaiement
+
+delete-paiement: 
+  path: /delete-paiement/{id_locataire}&{id_paiement}
+  controller: App\Controller\LocataireController::deletePaiement
+
+quittance-loyer: 
+  path: /quittance-loyer/{id_paiement}&{id_locataire}
+  controller: App\Controller\LocataireController::quittanceLoyer
+
+
+
+
 
 
 

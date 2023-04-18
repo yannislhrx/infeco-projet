@@ -38,9 +38,9 @@ class Locataire
     private $tel;
 
     /**
-     * @ORM\Column(type="string", length=500, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $adresse;
+    private $id_agence;
 
     public function getId(): ?int
     {
@@ -95,14 +95,14 @@ class Locataire
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getid_agence(): ?int
     {
-        return $this->adresse;
+        return $this->id_agence;
     }
 
-    public function setAdresse(string $adresse): self
+    public function setid_agence(int $id_agence): self
     {
-        $this->adresse = $adresse;
+        $this->id_agence = $id_agence;
 
         return $this;
     }

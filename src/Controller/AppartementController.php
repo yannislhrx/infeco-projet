@@ -9,6 +9,7 @@ use App\Entity\Appartement;
 use App\Entity\DepotGarantit;
 use App\Entity\EtatLieux;
 use App\Entity\Locataire;
+use App\Entity\Paiement;
 use App\Form\AjoutAppartementType;
 use App\Form\AjoutLocataireToAppartementType;
 use Symfony\Component\HttpFoundation\Request;
@@ -239,6 +240,7 @@ class AppartementController extends AbstractController
 
                 $repository2 = $entityManager->getRepository(DepotGarantit::class);
 
+
         
                 // Récupérez tous les articles de la base de données
                 // $etatDesLieux1 = $repository->findAll();
@@ -249,9 +251,9 @@ class AppartementController extends AbstractController
 
 
                 if ($infosLocataires) {
-                    $etatDesLieuxE = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'], 'quand' => 'entree' ]);
-                    $etatDesLieuxS = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'] , 'quand' => 'sortie']);
-                    $depotGarantie = $repository2->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id']]);
+                    $etatDesLieuxE = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'], 'quand' => 'entree','etat' => 1 ]);
+                    $etatDesLieuxS = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'] , 'quand' => 'sortie','etat' => 1]);
+                    $depotGarantie = $repository2->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'],'etat' => 1]);
 
                     
                     if (!$etatDesLieuxE) {
@@ -638,6 +640,94 @@ class AppartementController extends AbstractController
         }
         return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
     }
+
+
+
+    public function reinitAppartement($id_appartement) {
+
+
+        // set etat appartement 0
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select('u.id, u.loyer, u.idStrLocataires, u.etat')
+            ->from(Appartement::class, 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $id_appartement)
+            ->getQuery();
+        
+        $appartement = $query->getOneOrNullResult();
+
+
+
+        $id_locataire = $appartement['idStrLocataires'];
+        $loyer = $appartement['loyer'];
+
+
+
+
+
+
+
+        // set id strLoc appartement -> null
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select('d.id, d.etat')
+            ->from(DepotGarantit::class, 'd')
+            ->where('d.id_locataire = :id_locataire and d.etat = 1 and d.id_appartement = :id_appartement')
+            ->setParameter('id_locataire', $id_locataire)
+            ->setParameter('id_appartement', $id_appartement)
+            ->getQuery();
+        
+        $depot = $query->getOneOrNullResult();
+
+        // depot avec id appart -> 0. depot garantie
+
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select('e.id, e.etat, e.quand')
+            ->from(EtatLieux::class, 'e')
+            ->where('e.id_locataire = :id_locataire and e.etat = 1 and e.id_appartement = :id_appartement and e.quand = :quand')
+            ->setParameter('id_locataire', $id_locataire)
+            ->setParameter('id_appartement', $id_appartement)
+            ->setParameter('quand', 'entree')
+            ->getQuery();
+        
+        $etatEntree = $query->getOneOrNullResult();
+        $entityManager = $this->getDoctrine()->getManager();
+        $query = $entityManager->createQueryBuilder()
+            ->select('e.id, e.etat, e.quand')
+            ->from(EtatLieux::class, 'e')
+            ->where('e.id_locataire = :id_locataire and e.etat = 1 and e.id_appartement = :id_appartement and e.quand = :quand')
+            ->setParameter('id_locataire', $id_locataire)
+            ->setParameter('id_appartement', $id_appartement)
+            ->setParameter('quand', 'sortie')
+            ->getQuery();
+        
+        $etatSortie = $query->getOneOrNullResult();
+
+        // etat avec id appart -> 0. etat 
+
+
+
+        return new Response('etat  '.$depot['id']. ' etat ' . $depot['etat']);
+
+
+
+        
+
+
+
+
+
+
+
+    }
+
+
+    
 
     
 }

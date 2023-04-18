@@ -1,0 +1,60 @@
+<div class="modal fade" id="paiementLoyer" tabindex="-1" aria-labelledby="paiementLoyerLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="paiementLoyerLabel">Ajouter un paiement</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+					<form  class="" method="POST">
+						<div class="modal-body row g-3">
+
+
+							<div class="col-md-6">
+								<label class="form-label">Date</label>
+								<input type="date" name="date" class="form-control" required>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Somme</label>
+								<input type="number" name="somme" class="form-control" required>
+							</div>
+							<div class="col-md-12">
+								<label class="form-label">Emmeteur</label>
+								
+							</div>
+							<div class="col-md-12">
+								<label class="form-label">Appartement N°</label>
+								<select class="form-select" name="appartement" required>
+
+									<option value="" selected></option>
+
+									
+
+								</select>
+							</div>
+
+
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+							<button type="submit" class="btn btn-success" name="valider_paiement" value="1">Valider</button>
+						</div>
+					</form>
+
+					<div class="modal-body row g-3 text-center">
+
+						<p class="bold">Aucun appartement n'est occupé ou posséde un dossier validé par ce locataire. 
+						</p>
+						<p class="bold">Impossible d'ajouter un paiement</p>
+
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+					</div>
+
+			</div>
+
+		</div>
+	</div>

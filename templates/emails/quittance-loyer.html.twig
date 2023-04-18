@@ -1,0 +1,45 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Quittance de loyer {{ username }} {{ username }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #0077c0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .message {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .message p {
+            margin: 10px 0;
+        }
+        .message p.amount {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quittance de loyer</h1>
+        <div class="message">
+            <p>Bonjour {{ username }} {{ username}},</p>
+            <p>Je soussigné(e) , propriétaire du bien immobilier situé au , atteste avoir reçu de votre part la somme de <span class="amount">899 euros</span> au titre du loyer du mois de mois.</p>
+            <p>Je vous prie d'agréer, {{ username }}, l'expression de mes salutations distinguées.</p>
+            <p> test test</p>
+        </div>
+    </div>
+</body>
+</html>

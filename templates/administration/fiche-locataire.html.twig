@@ -18,6 +18,87 @@
 	</style>
 
 
+	<!-- Modal -->
+	<div class="modal fade" id="paiementLoyer" tabindex="-1" aria-labelledby="paiementLoyerLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="paiementLoyerLabel">Ajouter un paiement</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+				{% if appartementvalide != null %}
+
+
+					<form action="/ajout-paiement/{{locataire.id}}" class="" method="POST">
+						<div class="modal-body row g-3">
+
+
+							<div class="col-md-6">
+								<label class="form-label">Date</label>
+								<input type="date" name="date" class="form-control" required>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label">Somme</label>
+								<input type="number" name="somme" class="form-control" required>
+							</div>
+							<div class="col-md-12">
+								<label class="form-label">Emmeteur</label>
+								<select id="inputLocap" class="form-select" name="emmeteur">
+
+
+									<option value="{{ locataire.id }}">{{ locataire.nom }}
+										{{ locataire.prenom }}</option>
+									<option value="CAF">CAF</option>
+
+
+								</select>
+							</div>
+							<div class="col-md-12">
+								<label class="form-label">Appartement N°</label>
+								<select class="form-select" name="appartement" required>
+
+									<option value="" selected></option>
+
+									{% for ap in appartementvalide %}
+
+										<option value="{{ ap.id }}">{{ ap.id }}</option>
+
+									{% endfor %}
+
+
+								</select>
+							</div>
+
+
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+							<button type="submit" class="btn btn-success" name="valider_paiement" value="1">Valider</button>
+						</div>
+					</form>
+
+				{% else %}
+					<div class="modal-body row g-3 text-center">
+
+						<p class="bold">Aucun appartement n'est occupé ou posséde un dossier validé par ce locataire.
+						</p>
+						<p class="bold">Impossible d'ajouter un paiement</p>
+
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+					</div>
+
+				{% endif %}
+			</div>
+
+		</div>
+	</div>
+
+
 	<div class="container">
 
 		<div class="mt-5 mb-5 ">
@@ -28,12 +109,84 @@
 
 		</div>
 
+
+		{% set sommeLoyer = 0 %}
+		{% set sommeDubis = 0 %}
+		{% set sommeDu = 0 %}
+
+
+		{% for pay in paiement %}
+			{% if pay.idLocataire == locataire.id %}
+				{% set sommeLoyer = sommeLoyer + pay.somme %}
+
+			{% endif %}
+		{% endfor %}
+
+
+		{% if etatLieux != null %}
+
+			{% for etat in etatLieux %}
+
+				{% for apvalide in appartement %}
+
+					{% if etat.idLocataire == locataire.id and etat.quand == 'entree' and etat.idAppartement == apvalide.id %}
+
+						{% set dateEntree = etat.date %}
+						{% set startDate = dateEntree %}
+						{% set dateTest = '2023-05-29' %}
+
+						{% set difference = date( dateTest|date() ).diff(date(startDate)) %}
+						{% set leftMonth = difference.m %}
+
+
+						{% set sommeDubis = apvalide.loyer * leftMonth %}
+						{% set sommeDu = sommeDubis + sommeDu %}
+
+
+					{% endif %}
+
+				{% endfor %}
+
+
+			{% endfor %}
+
+
+		{% endif %}
+
+
+		{% set difference =   sommeLoyer - sommeDu %}
+		{% set difference2 =   sommeDu - sommeLoyer %}
+
+		{% if difference < 0  %}
+			<div class="light-red text-center mb-5 p-5">
+				<h2>Le locataire n'est pas à jours dans les paiements, il doit
+					{{difference2}}€
+				</h2>
+			</div>
+		{% endif %}
+		{% if difference == 0  %}
+			<div class="light-green text-center mb-5 p-5">
+
+				<h2>Le locataire est à jours dans les paiements
+				</h2>
+			</div>
+		{% endif %}
+		{% if difference > 0  %}
+			<div class="light-orange text-center mb-5 p-5">
+
+				<h2>Le locataire est à jours dans ses Paiements, Nous lui devons
+					{{ difference}}€
+				</h2>
+			</div>
+		{% endif %}
+
+
 		<div class="row">
 
 			<div class="col-6 row">
 				<div class="col-12">
 					<div class="card shadow-lg   bg-body ">
-						<div class="card-header">
+						<div class="card-header ">
 							<h3>Informations</h3>
 						</div>
 
@@ -82,7 +235,7 @@
 								{% for etat in etatLieux %}
 									<p>
 										<span class="bold">Pour l'appartement
-											{{etat.idAppartement}}
+											<a href="/fiche-appartement/{{etat.idAppartement}}">{{etat.idAppartement}}</a>
 											:
 										</span>
 									</p>
@@ -173,6 +326,12 @@
 
 									<ul>
 										<li>
+											<span class="bold">Appartement N° :
+											</span>
+											<a href="/fiche-appartement/{{ap.id}}">
+												{{ ap.id }}</a>
+										</li>
+										<li>
 											<span class="bold">Adresse :
 											</span>
 											{{ ap.adresse }}</li>
@@ -233,7 +392,7 @@
 								{% for dep in depotGarantie %}
 									<p>
 										<span class="bold">Pour l'appartement
-											{{dep.idAppartement}}
+											<a href="/fiche-appartement/{{dep.idAppartement}}">{{dep.idAppartement}}</a>
 											:
 										</span>
 										{{dep.somme}}
@@ -269,14 +428,310 @@
 				<div class="card shadow-lg  mb-5 bg-body ">
 					<div class="card-header">
 						<h3>Liste des paiements</h3>
+						<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paiementLoyer">
+							Ajouter un paiment
+						</button>
+
 					</div>
 
-					<div class="card-body">
+					<div class="card-body ">
 
-						{% if depotGarantie != null %}
-							<span class="bold">
-								Aucun paiement pour ce locataire.
-							</span>
+						{% if paiement != null %}
+							<div class="row text-center">
+
+								<div class="col mr-3 nameSearch">
+									<h6>
+										<span class="bold">
+											#
+										</span>
+									</h6>
+								</div>
+								<div class="col mr-3">
+									<h6>
+										<span class="bold">
+											Somme</span>
+									</h6>
+								</div>
+								<div class="col mr-3">
+									<h6>
+										<span class="bold">
+											Emmeteur</span>
+									</h6>
+								</div>
+								<div class="col mr-3">
+									<h6>
+										<span class="bold">
+											Date</span>
+									</h6>
+								</div>
+								<div class="col mr-3">
+									<h6>
+										<span class="bold">
+											Appartement N°
+										</span>
+									</h6>
+								</div>
+
+								<div class="col mr-3"></div>
+
+							</div>
+
+
+							{% set counter = 0 %}
+							{% for pay in paiement %}
+
+								<div class="row text-center">
+
+									<div class="col mr-3 nameSearch">
+										<h6>{{pay.id}}
+										</h6>
+									</div>
+									<div class="col mr-3">
+										<h6>{{pay.somme}}</h6>
+									</div>
+									<div class="col mr-3">
+										<h6>
+											{% if pay.emmeteur == 'CAF' %}
+												{{pay.emmeteur}}
+											{% else %}
+												{{locataire.nom}}
+												{{locataire.prenom}}
+											{% endif %}
+
+										</h6>
+									</div>
+									<div class="col mr-3">
+										<h6>{{pay.date|date('d.m-y')}}</h6>
+									</div>
+									<div class="col mr-3">
+										<h6>
+											<a href="/fiche-appartement/{{pay.idAppartement}}">
+												{{pay.idAppartement}}</a>
+										</h6>
+									</div>
+
+									<div class="col mr-3">
+										<a href="" class="btn-open-modal" data-bs-toggle="modal" data-bs-target="#quittanceLoyer{{counter}}" data-value="{{ pay.id }}">
+											<i class="fas fa-print"></i>
+										</a>
+										|
+										{# href="modifier-paiement/{{pay.id}}&{{locataire.id}}" #}
+										<a href="" class="btn-open-modal" data-bs-toggle="modal" data-bs-target="#modifPaiementLoyer{{counter}}" data-value="{{ pay.id }}">
+											<i class="fas fa-pen"></i>
+										</a>
+										|
+										<a href="/delete-paiement/{{locataire.id}}&{{pay.id}}">
+											<i class="fas fa-trash"></i>
+										</a>
+									</div>
+
+								</div>
+
+
+								<!-- Modal modif paiement -->
+								<div class="modal fade" id="modifPaiementLoyer{{counter}}" tabindex="-1" aria-labelledby="modifPaiementLoyerLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="modifPaiementLoyerLabel">Modifier un paiement</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											</div>
+
+											{% if appartementvalide != null %}
+
+												<form action="/modifier-paiement/{{locataire.id}}&{{pay.id}}" class="" method="POST">
+													<div class="modal-body row g-3">
+														<div class="col-md-6">
+															<label class="form-label">Date</label>
+															<input type="date" name="date" class="form-control" required value="{{ pay.date|date('Y-m-d') }}">
+														</div>
+														<div class="col-md-6">
+															<label class="form-label">Somme</label>
+															<input type="number" name="somme" class="form-control" required value="{{ pay.somme }}">
+														</div>
+														<div class="col-md-12">
+															<label class="form-label">Emmeteur</label>
+															<select class="form-select" name="emmeteur">
+
+																{% if pay.emmeteur == 'CAF' %}
+																	<option value="CAF" selected>CAF</option>
+																	<option value="{{ locataire.id }}">{{ locataire.nom }}
+																		{{ locataire.prenom }}</option>
+																{% else %}
+																	<option value="{{ locataire.id }}" selected>{{ locataire.nom }}
+																		{{ locataire.prenom }}</option>
+																	<option value="CAF">CAF</option>
+
+																{% endif %}
+
+
+															</select>
+														</div>
+														<div class="col-md-12">
+															<label class="form-label">Appartement N°</label>
+															<select class="form-select" name="appartement" required>
+
+																<option value=""></option>
+
+
+																{% for ap in appartementvalide %}
+
+																	{% if ap.id == pay.idAppartement %}
+																		<option value="{{ ap.id }}" selected>{{ ap.id }}</option>
+
+
+																	{% else %}
+																		<option value="{{ ap.id }}">{{ ap.id }}</option>
+
+																	{% endif %}
+																{% endfor %}
+
+
+															</select>
+														</div>
+
+
+													</div>
+
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+														<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
+													</div>
+												</form>
+
+											{% else %}
+												<div class="modal-body row g-3 text-center">
+
+													<p class="bold">Aucun appartement n'est occupé par ce locataire.
+													</p>
+													<p class="bold">Impossible d'ajouter un paiement</p>
+
+												</div>
+
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+												</div>
+
+											{% endif %}
+										</div>
+
+									</div>
+								</div>
+								{# fin modif paiement #}
+
+								{# quittance #}
+								<div class="modal fade" id="quittanceLoyer{{counter}}" tabindex="-1" aria-labelledby="quittanceLoyerLabel" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="quittanceLoyer">Génération Quittance de Loyer</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											</div>
+											{% set sommeLoyer = 0 %}
+											{% set sommeDubis = 0 %}
+											{% set sommeDu = 0 %}
+
+
+											{% for pay in paiement %}
+												{% if pay.idLocataire == locataire.id %}
+													{% set sommeLoyer = sommeLoyer + pay.somme %}
+
+												{% endif %}
+											{% endfor %}
+
+
+											{% if etatLieux != null %}
+												{% for etat in etatLieux %}
+
+
+													{% for apvalide in appartement %}
+
+														{% if etat.idLocataire == locataire.id and etat.quand == 'entree' and etat.idAppartement == apvalide.id %}
+
+															{% set dateEntree = etat.date %}
+															{% set startDate = dateEntree %}
+															{% set dateTest = '2023-05-29' %}
+
+															{% set difference = date( dateTest|date() ).diff(date(startDate)) %}
+															{% set leftMonth = difference.m %}
+
+
+															{% set sommeDubis = apvalide.loyer * leftMonth %}
+															{% set sommeDu = sommeDubis + sommeDu %}
+
+
+														{% endif %}
+
+													{% endfor %}
+
+
+												{% endfor %}
+
+
+												{% set difference = sommeDu - sommeLoyer %}
+
+
+												{# id doit 	{{sommeDu}} <br>
+												
+																									le loyer est de 	{{sommeLoyer}}  <br>
+																									difference	{{difference}} #}
+
+
+												{% if difference > 0 %}
+													<div class="modal-body">
+														<p class="text-center">
+															<span class="bold">
+																Le Locataire n'est pas a jours dans ses paiements. Impossible de générer une quittance de loyer
+															</span>
+														</p>
+													</div>
+
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+													</div>
+
+												{% else %}
+
+													<form action="/quittance-loyer/{{pay.id}}&{{locataire.id}}" class="p-3" method="POST">
+														<div class="modal-body row g-3"></div>
+														<label class="form-label">
+															Nom Prénom :
+														</label>
+														{{locataire.nom}}
+														{{locataire.prenom}}
+														<br>
+														<label class="form-label">
+															Loyer :
+														</label>
+														{{pay.somme}}
+														<br>
+														<label class="form-label">
+															Date :
+														</label>
+														{{pay.date|date("d-m-y")}}
+
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+															<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
+														</div>
+													</form>
+												{% endif %}
+
+
+											{% endif %}
+
+										</div>
+									</div>
+								</div>
+
+
+								{# fin quittance #}
+
+								{% set counter = counter + 1 %}
+
+							{% endfor %}
+
+
 						{% else %}
 							<p class="text-center">
 								<span class="bold">
@@ -296,5 +751,39 @@
 
 
 	</div>
+
+	{# 
+			{% set date = date() %}
+			{% set day = date|date('j') %}
+			{% set monthName = date|date('F')|trans([], 'messages', 'fr_FR') %}
+			
+			{% set dayName = date|date('l')|trans([], 'messages', 'fr_FR') %}
+			{% if dayName == 'Monday' %}{% set dayName = 'lundi' %}
+			{% elseif dayName == 'Tuesday' %}{% set dayName = 'mardi' %}
+			{% elseif dayName == 'Wednesday' %}{% set dayName = 'mercredi' %}
+			{% elseif dayName == 'Thursday' %}{% set dayName = 'jeudi' %}
+			{% elseif dayName == 'Friday' %}{% set dayName = 'vendredi' %}
+			{% elseif dayName == 'Saturday' %}{% set dayName = 'samedi' %}
+			{% elseif dayName == 'Sunday' %}{% set dayName = 'dimanche' %}
+			{% endif %}
+			
+			
+			
+			{% if monthName == 'January' %}{% set monthName = 'Janvier' %}
+			{% elseif monthName == 'February' %}{% set monthName = 'Février' %}
+			{% elseif monthName == 'March' %}{% set monthName = 'Mars' %}
+			{% elseif monthName == 'April' %}{% set monthName = 'Avril' %}
+			{% elseif monthName == 'May' %}{% set monthName = 'Mai' %}
+			{% elseif monthName == 'June' %}{% set monthName = 'Juin' %}
+			{% elseif monthName == 'July' %}{% set monthName = 'Juillet' %}
+			{% elseif monthName == 'August' %}{% set monthName = 'Aout' %}
+			{% elseif monthName == 'September' %}{% set monthName = 'Septembre' %}
+			{% elseif monthName == 'October' %}{% set monthName = 'Octobre' %}
+			{% elseif monthName == 'November' %}{% set monthName = 'Novembre' %}
+			{% elseif monthName == 'December' %}{% set monthName = 'Decembre' %}
+			{% endif %}
+			
+			{{ dayName ~ ' ' ~ day ~ ' ' ~ monthName }} #}
+
 
 {% endblock %}
