@@ -248,12 +248,28 @@ class AppartementController extends AbstractController
                 $etatDesLieuxE = '';
                 $etatDesLieuxS = '';
                 $depotGarantie = '';
+                $paiement = '';
+
 
 
                 if ($infosLocataires) {
                     $etatDesLieuxE = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'], 'quand' => 'entree','etat' => 1 ]);
                     $etatDesLieuxS = $repository->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'] , 'quand' => 'sortie','etat' => 1]);
                     $depotGarantie = $repository2->findBy(['id_appartement' => $id,'id_locataire' => $infosLocataires['id'],'etat' => 1]);
+
+                    $repository = $entityManager->getRepository(Paiement::class);
+
+                    $query = $repository->createQueryBuilder('p')
+                        ->where('p.id_locataire = :id')
+                        ->setParameter('id', $infosLocataires['id'])
+                        ->orderBy('p.date', 'DESC')
+                        ->getQuery();
+            
+                        $paiement = $query->getResult();
+            
+                    if (!$paiement) {
+                        $paiement = '';
+                    }
 
                     
                     if (!$etatDesLieuxE) {
@@ -313,6 +329,8 @@ class AppartementController extends AbstractController
                     $entityManager->flush();
                 }
 
+
+              
                
 
               
@@ -335,6 +353,7 @@ class AppartementController extends AbstractController
             'etatDesLieuxE' => $etatDesLieuxE,
             'etatDesLieuxS' => $etatDesLieuxS,
             'depotGarantie' => $depotGarantie,
+            'paiement'      => $paiement,
         ]);
     }
 
@@ -645,23 +664,22 @@ class AppartementController extends AbstractController
 
     public function reinitAppartement($id_appartement) {
 
+        $etatSortie = '';
+
+        $etatEntree = '';
+
+        $depot = '';
 
         // set etat appartement 0
 
         $entityManager = $this->getDoctrine()->getManager();
-        $query = $entityManager->createQueryBuilder()
-            ->select('u.id, u.loyer, u.idStrLocataires, u.etat')
-            ->from(Appartement::class, 'u')
-            ->where('u.id = :id')
-            ->setParameter('id', $id_appartement)
-            ->getQuery();
-        
-        $appartement = $query->getOneOrNullResult();
+        $appartement = $entityManager->getRepository(Appartement::class)->find($id_appartement);
+    
 
 
 
-        $id_locataire = $appartement['idStrLocataires'];
-        $loyer = $appartement['loyer'];
+        $id_locataire = $appartement->getIdStrLocataires();
+        $loyer = $appartement->getLoyer();
 
 
 
@@ -680,7 +698,14 @@ class AppartementController extends AbstractController
             ->setParameter('id_appartement', $id_appartement)
             ->getQuery();
         
-        $depot = $query->getOneOrNullResult();
+        $depotArray = $query->getOneOrNullResult();
+
+      
+
+        if ($depotArray) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $depot = $entityManager->getRepository(DepotGarantit::class)->find($depotArray['id']);
+        }
 
         // depot avec id appart -> 0. depot garantie
 
@@ -695,7 +720,15 @@ class AppartementController extends AbstractController
             ->setParameter('quand', 'entree')
             ->getQuery();
         
-        $etatEntree = $query->getOneOrNullResult();
+        $etatEntreeArray = $query->getOneOrNullResult();
+      
+
+        
+        if ($etatEntreeArray) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $etatEntree = $entityManager->getRepository(EtatLieux::class)->find($etatEntreeArray['id']);
+        }
+
         $entityManager = $this->getDoctrine()->getManager();
         $query = $entityManager->createQueryBuilder()
             ->select('e.id, e.etat, e.quand')
@@ -706,15 +739,81 @@ class AppartementController extends AbstractController
             ->setParameter('quand', 'sortie')
             ->getQuery();
         
-        $etatSortie = $query->getOneOrNullResult();
+        $etatSortieArray = $query->getOneOrNullResult();
+     
+        if ($etatSortieArray) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $etatSortie = $entityManager->getRepository(EtatLieux::class)->find($etatSortieArray['id']);
+        }
+
+
+        
+
+        // if (!$etatSortie) {
+        //     $etatSortie = '';
+        // }
+        // if (!$etatEntree) {
+        //     $etatEntree = '';
+        // }
+        // if ($etatSortieArray) {
+        //     $depot = '';
+        // }
+
+
+        if ($appartement->getEtat() == 0 ) {
+            return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
+
+        }
+        elseif ($appartement->getEtat() == 1) {
+
+            if ($etatEntree) {
+                $entityManager->remove($etatEntree);
+                $entityManager->flush();
+            }
+            if ($etatSortie) {
+                $entityManager->remove($etatSortie);
+                $entityManager->flush();
+            }
+            if ($depot) {
+                $entityManager->remove($depot);
+                $entityManager->flush();
+            }
+
+            
+            $appartement->setIdStrLocataires('') ;
+            $entityManager->flush();
+
+
+
+            return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
+
+        }
+        else {
+            if ($etatEntree) {
+                $etatEntree->setEtat(0);
+                $entityManager->flush();
+            }
+            if ($etatSortie) {
+                $etatSortie->setEtat(0);
+                $entityManager->flush();
+            }
+            if ($depot) {
+                $depot->setEtat(0);
+                $entityManager->flush();
+            }
+            $appartement->setIdStrLocataires('') ;
+            $entityManager->flush();
+
+            return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
+        }
 
         // etat avec id appart -> 0. etat 
 
 
 
-        return new Response('etat  '.$depot['id']. ' etat ' . $depot['etat']);
+        
 
-
+        return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
 
         
 
