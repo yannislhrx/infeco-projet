@@ -18,210 +18,130 @@
 	</style>
 
 
+	{# quittance #}
+	<div class="modal fade" id="reinitAppartement" tabindex="-1" aria-labelledby="quittanceLoyerLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="reiniAppart">Vider l'Appartement</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				{% set sommeLoyer = 0 %}
+				{% set sommeDubis = 0 %}
+				{% set sommeDu = 0 %}
 
 
+				{% for pay in paiement %}
+					{% if pay.idLocataire == appartement.idStrLocataires  and pay.idAppartement == appartement.id %}
+						{% set sommeLoyer = sommeLoyer + pay.somme %}
+
+					{% endif %}
+				{% endfor %}
+
+				{% if appartement.etat == 2 %}
+
+					{% if etatDesLieuxS != null  %}
+						{% for etat in etatDesLieuxE %}
 
 
+							{% if etat.idLocataire == appartement.idStrLocataires and etat.quand == 'entree' and etat.idAppartement == appartement.id %}
+
+								{% set dateEntree = etat.date %}
+								{% set startDate = dateEntree %}
+								{% set dateTest = '2023-06-29' %}
+
+								{% set difference = date( dateTest|date() ).diff(date(startDate)) %}
+								{% set leftMonth = difference.m %}
 
 
+								{% set sommeDubis = appartement.loyer * leftMonth %}
+								{% set sommeDu = sommeDubis + sommeDu %}
 
 
+							{% endif %}
 
 
+						{% endfor %}
 
 
+						{% set difference = sommeDu - sommeLoyer %}
 
 
+						id doit
+						{{sommeDu}}
+						<br>
+
+						le loyer est de
+						{{sommeLoyer}}
+						<br>
+						difference
+						{{difference}}
 
 
+						{% if difference > 0 %}
+							<div class="modal-body">
+								<p class="text-center">
+									<span class="bold">
+										Le Locataire n'est pas a jours dans ses paiements. Veuillez régler ce problème avant de vider l'appartement
+									</span>
+								</p>
+							</div>
 
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+							</div>
 
+						{% else %}
 
-
-
-{# quittance #}
-								<div class="modal fade" id="reinitAppartement" tabindex="-1" aria-labelledby="quittanceLoyerLabel" aria-hidden="true">
-									<div class="modal-dialog modal-dialog-centered">
-										<div class="modal-content">
-											<div class="modal-header">
-												<h5 class="modal-title" id="reiniAppart">Vider l'Appartement</h5>
-												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-											</div>
-											{% set sommeLoyer = 0 %}
-											{% set sommeDubis = 0 %}
-											{% set sommeDu = 0 %}
-
-
-											{% for pay in paiement %}
-												{% if pay.idLocataire == appartement.idStrLocataires  and pay.idAppartement == appartement.id %}
-													{% set sommeLoyer = sommeLoyer + pay.somme %}
-
-												{% endif %}
-											{% endfor %} 
-
-											{% if appartement.etat == 2 %}
-											
-												{% if etatDesLieuxS != null  %}
-													{% for etat in etatDesLieuxE %}
-
-
-
-															{% if etat.idLocataire == appartement.idStrLocataires and etat.quand == 'entree' and etat.idAppartement == appartement.id %}
-
-																{% set dateEntree = etat.date %}
-																{% set startDate = dateEntree %}
-																{% set dateTest = '2023-06-29' %}
-
-																{% set difference = date( dateTest|date() ).diff(date(startDate)) %}
-																{% set leftMonth = difference.m %}
-
-
-																{% set sommeDubis = appartement.loyer * leftMonth %}
-																{% set sommeDu = sommeDubis + sommeDu %}
-
-
-															{% endif %} 
-
-
-
-													{% endfor %} 
-
-							
-
-
-													{% set difference = sommeDu - sommeLoyer %}
-
-
-													id doit 	{{sommeDu}} <br>
-													
-																										le loyer est de 	{{sommeLoyer}}  <br>
-																										difference	{{difference}}
-
-
-													{% if difference > 0 %}
-														<div class="modal-body">
-															<p class="text-center">
-																<span class="bold">
-																	Le Locataire n'est pas a jours dans ses paiements. Veuillez régler ce problème avant de vider l'appartement
-																</span>
-															</p>
-														</div>
-
-														<div class="modal-footer">
-															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-														</div> 
-
-													{% else %}
-
-														<form action="/reinit-appartement/{{appartement.id}}" class="p-3" method="POST">
-															<div class="modal-body row g-3 text-center">
-																<p class="bold"> Etes vous sur de vouloir vider l'appartement ?</p>
-															</div>
-															
-
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-																<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
-															</div> 
-														</form>
-													{% endif %}
-
-												{% else %}
-												<div class="modal-body row g-3 text-center">
-													<p class="bold">Un etat des lieux de sortie est nécéssaire avant de vider l'appartement</p>			
-												</div>
-												
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-															</div> 
-													
-												{% endif %}
-											{% else %}
-												<form action="/reinit-appartement/{{appartement.id}}" class="p-3" method="POST">
-															<div class="modal-body row g-3 text-center">
-																<p class="bold"> Voulez vous vraiment vider l'appartement ? </p> 
-																<p class="text-muted">L'appartement n'ayant pas un dossier valide, cela supprimera les etat des lieux et dépot de garantie en cours. </p>
-															</div>
-															
-
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-																<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
-															</div> 
-												</form>
-											{% endif %}
-
-										</div>
-									</div>
+							<form action="/reinit-appartement/{{appartement.id}}" class="p-3" method="POST">
+								<div class="modal-body row g-3 text-center">
+									<p class="bold">
+										Etes vous sur de vouloir vider l'appartement ?</p>
 								</div>
 
 
-								{# fin quittance #}
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+									<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
+								</div>
+							</form>
+						{% endif %}
+
+					{% else %}
+						<div class="modal-body row g-3 text-center">
+							<p class="bold">Un etat des lieux de sortie est nécéssaire avant de vider l'appartement</p>
+						</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+						</div>
+
+					{% endif %}
+				{% else %}
+					<form action="/reinit-appartement/{{appartement.id}}" class="p-3" method="POST">
+						<div class="modal-body row g-3 text-center">
+							<p class="bold">
+								Voulez vous vraiment vider l'appartement ?
+							</p>
+							<p class="text-muted">L'appartement n'ayant pas un dossier valide, cela supprimera les etat des lieux et dépot de garantie en cours.
+							</p>
+						</div>
+
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+							<button type="submit" class="btn btn-success" name="modifier_paiement" value="1">Valider</button>
+						</div>
+					</form>
+				{% endif %}
+
+			</div>
+		</div>
+	</div>
+
+
+	{# fin quittance #}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
 
 	<div class="container">
 
@@ -312,10 +232,10 @@
 									<i class="fas fa-circle-info"></i>
 								</a>
 
-{# 
-								<a href="/delete-locAppart/{{appartement.id}}">
-									<i class="fas fa-trash"></i>
-								</a> #}
+{# 								
+																<a href="/delete-locAppart/{{appartement.id}}">
+																	<i class="fas fa-trash"></i>
+																</a> #}
 							</p>
 
 
@@ -336,7 +256,7 @@
 										<option value="" selected></option>
 
 										{% for loc in locataires %}
-											<option value="{{ loc.id }}">{{ loc.nom }}</option>
+											<option value="{{ loc.id }}">{{ loc.nom }} {{loc.prenom}}</option>
 										{% endfor %}
 
 
@@ -515,7 +435,7 @@
 
 			<div class="col-5">
 
-			<div class="card shadow-lg  mb-5 bg-body ">
+				<div class="card shadow-lg  mb-5 bg-body ">
 					<div class="card-header">
 						<h3>Dépot de garantie</h3>
 					</div>
@@ -524,43 +444,40 @@
 
 						{% if infosLocataires != null %}
 
-				
-						{% if depotGarantie != null %}
+
+							{% if depotGarantie != null %}
 
 								<form class="row g-3" method="POST" action="/modifier-depot-garantie/{{infosLocataires.id}}&{{appartement.id}}&{{depotGarantie[0].id}}">
 
-										<div class="col-md-6">
-											<label class="form-label">Somme versée</label>
-											<input type="number" name="somme" min="0"  class="form-control" value="{{depotGarantie[0].somme}}">
-										</div>
-										
-
-										<div class="col-12">
-											<button type="submit" class="btn btn-warning" name="modifier_depot" value="1">Modifier</button>
-											<button type="submit" class="btn btn-danger" name="supprimer_depot" value="1">Supprimer</button>
-										</div>
-									</form>
+									<div class="col-md-6">
+										<label class="form-label">Somme versée</label>
+										<input type="number" name="somme" min="0" class="form-control" value="{{depotGarantie[0].somme}}">
+									</div>
 
 
-						{% else %}
+									<div class="col-12">
+										<button type="submit" class="btn btn-warning" name="modifier_depot" value="1">Modifier</button>
+										<button type="submit" class="btn btn-danger" name="supprimer_depot" value="1">Supprimer</button>
+									</div>
+								</form>
 
 
-						
+							{% else %}
 
-							<form class="row g-3" method="POST" action="/ajout-depot-garantie/{{infosLocataires.id}}&{{appartement.id}}">
 
-										<div class="col-md-6">
-											<label class="form-label">Somme versée</label>
-											<input type="number" name="somme" min="0"  class="form-control">
-										</div>
-										
+								<form class="row g-3" method="POST" action="/ajout-depot-garantie/{{infosLocataires.id}}&{{appartement.id}}">
 
-										<div class="col-12">
-											<button type="submit" class="btn btn-success" name="valider_depot" value="1">Valider</button>
-										</div>
-									</form>
-						{% endif %}
-						
+									<div class="col-md-6">
+										<label class="form-label">Somme versée</label>
+										<input type="number" name="somme" min="0" class="form-control">
+									</div>
+
+
+									<div class="col-12">
+										<button type="submit" class="btn btn-success" name="valider_depot" value="1">Valider</button>
+									</div>
+								</form>
+							{% endif %}
 
 
 						{% else %}
@@ -569,7 +486,7 @@
 									Aucun Locataire dans ce logement.
 								</span>
 							</p>
-							
+
 						{% endif %}
 						{#  #}
 
@@ -579,8 +496,8 @@
 
 
 				</div>
-			
-			
+
+
 			</div>
 
 

@@ -32,8 +32,8 @@ class DepotGarantit
      */
     private $somme;
 
-      /**
-     * @ORM\Column(type="string", nullable=true)
+    /**
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $etat;
 
@@ -78,12 +78,12 @@ class DepotGarantit
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): ?int
     {
         return $this->etat;
     }
 
-    public function setEtat(string $etat): self
+    public function setEtat(?int $etat): self
     {
         $this->etat = $etat;
 

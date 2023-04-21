@@ -110,20 +110,18 @@
 		</div>
 
 
-		{% set sommeLoyer = 0 %}
-		{% set sommeDubis = 0 %}
-		{% set sommeDu = 0 %}
+		
 
 
-		{% for pay in paiement %}
+		{# {% for pay in paiement %}
 			{% if pay.idLocataire == locataire.id %}
 				{% set sommeLoyer = sommeLoyer + pay.somme %}
 
 			{% endif %}
-		{% endfor %}
+		{% endfor %} #}
 
 
-		{% if etatLieux != null %}
+		{# {% if etatLieux != null %}
 
 			{% for etat in etatLieux %}
 
@@ -151,31 +149,45 @@
 			{% endfor %}
 
 
-		{% endif %}
+		{% endif %} #}
 
 
-		{% set difference =   sommeLoyer - sommeDu %}
-		{% set difference2 =   sommeDu - sommeLoyer %}
+		{# {% set difference =   sommeLoyer - sommeDu %}
+		{% set difference2 =   sommeDu - sommeLoyer %} #}
 
-		{% if difference < 0  %}
+		{% set sommeDubis = 0 %}
+		{% set sommeDu = 0 %}
+
+		{% for sol in soldes %}
+
+			{% set sommeDubis = sol.somme %}
+			{% set sommeDu = sommeDubis + sommeDu %}
+
+
+			
+		{% endfor %}
+
+	
+
+		{% if sommeDu > 0  %}
 			<div class="light-red text-center mb-5 p-5">
 				<h2>Le locataire n'est pas à jours dans les paiements, il doit
-					{{difference2}}€
+					{{sommeDu}}€
 				</h2>
 			</div>
 		{% endif %}
-		{% if difference == 0  %}
+		{% if sommeDu == 0  %}
 			<div class="light-green text-center mb-5 p-5">
 
 				<h2>Le locataire est à jours dans les paiements
 				</h2>
 			</div>
 		{% endif %}
-		{% if difference > 0  %}
+		{% if sommeDu < 0  %}
 			<div class="light-orange text-center mb-5 p-5">
 
 				<h2>Le locataire est à jours dans ses Paiements, Nous lui devons
-					{{ difference}}€
+					{{ sommeDu}}€
 				</h2>
 			</div>
 		{% endif %}
@@ -224,7 +236,7 @@
 				<div class="col-12">
 
 
-					<div class="card shadow-lg  mb-5 bg-body ">
+					<div class="card shadow-lg  mb-5 bg-body  mt-5">
 						<div class="card-header">
 							<h3>Etat des Lieux</h3>
 						</div>
@@ -627,57 +639,26 @@
 												<h5 class="modal-title" id="quittanceLoyer">Génération Quittance de Loyer</h5>
 												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 											</div>
-											{% set sommeLoyer = 0 %}
-											{% set sommeDubis = 0 %}
-											{% set sommeDu = 0 %}
+											
 
 
-											{% for pay in paiement %}
-												{% if pay.idLocataire == locataire.id %}
-													{% set sommeLoyer = sommeLoyer + pay.somme %}
-
-												{% endif %}
-											{% endfor %}
 
 
 											{% if etatLieux != null %}
-												{% for etat in etatLieux %}
+												{% set sommeDubis = 0 %}
+												{% set sommeDu = 0 %}
+
+												{% for sol in soldes %}
+
+													{% set sommeDubis = sol.somme %}
+													{% set sommeDu = sommeDubis + sommeDu %}
 
 
-													{% for apvalide in appartement %}
-
-														{% if etat.idLocataire == locataire.id and etat.quand == 'entree' and etat.idAppartement == apvalide.id %}
-
-															{% set dateEntree = etat.date %}
-															{% set startDate = dateEntree %}
-															{% set dateTest = '2023-06-29' %}
-
-															{% set difference = date( dateTest|date() ).diff(date(startDate)) %}
-															{% set leftMonth = difference.m %}
-
-
-															{% set sommeDubis = apvalide.loyer * leftMonth %}
-															{% set sommeDu = sommeDubis + sommeDu %}
-
-
-														{% endif %}
-
-													{% endfor %}
-
-
+													
 												{% endfor %}
 
 
-												{% set difference = sommeDu - sommeLoyer %}
-
-
-												{# id doit 	{{sommeDu}} <br>
-												
-																									le loyer est de 	{{sommeLoyer}}  <br>
-																									difference	{{difference}} #}
-
-
-												{% if difference > 0 %}
+												{% if sommeDu > 0 %}
 													<div class="modal-body">
 														<p class="text-center">
 															<span class="bold">
@@ -784,6 +765,10 @@
 			{% endif %}
 			
 			{{ dayName ~ ' ' ~ day ~ ' ' ~ monthName }} #}
+
+			<pre>
+				{{ dump(soldes) }}
+			</pre>
 
 
 {% endblock %}

@@ -7,10 +7,12 @@ use App\Entity\DepotGarantit;
 use App\Entity\EtatLieux;
 use App\Entity\Locataire;
 use App\Entity\Paiement;
+use App\Entity\Soldes;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\AddLocataireType;
+use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\Mailer\MailerInterface;
@@ -19,12 +21,20 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Intl\Languages;
 use Symfony\Component\Intl\DateFormatter\IntlDateFormatter;
-
-
-
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class LocataireController extends AbstractController
 {
+
+    private $tokenStorage;
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
+
+    
     /**
      * @Route("/locataire", name="app_locataire")
      */
@@ -37,16 +47,46 @@ class LocataireController extends AbstractController
 
     public function getLocataires(): Response {
 
+        
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
+
+
+
             // Récupération de tous les produits depuis la base de données
         $repository = $this->getDoctrine()->getRepository(Locataire::class);
-        $locataires = $repository->findAll();
+        // $locataires = $repository->findAll();
+        $locataires = $repository->findBy(['id_agence' => $user->getId()]);
 
         return $this->render('administration/liste-locataire.html.twig', [
             'locataires' => $locataires,
+            'user' => $user,
+
         ]);
     }
     public function create(Request $request)
     {
+
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
+
+
         $entity = new Locataire();
         $form = $this->createForm(AddLocataireType::class, $entity);
 
@@ -54,6 +94,7 @@ class LocataireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $entity->setidAgence($user->getId());
             $entityManager->persist($entity);
             $entityManager->flush();
 
@@ -64,12 +105,16 @@ class LocataireController extends AbstractController
 
         return $this->render('administration/ajout-locataire.html.twig', [
             'form' => $form->createView(),
+            'user' => $user,
+
         ]);
     }
 
     
     public function deleteLocataire($id)
     {
+
+        
         // return new Response('Hello '.$id);
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -89,6 +134,18 @@ class LocataireController extends AbstractController
 
     public function modifierLocataire($id, Request $request)
     {
+
+        
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
         // return new Response('Hello '.$id);
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -139,12 +196,26 @@ class LocataireController extends AbstractController
     
         return $this->render('administration/modifier-locataire.html.twig', [
             'locataire' => $locataire,
+            'user' => $user,
+
             
         ]);
     }
 
     public function ficheLocataire($id): Response {
 
+
+        
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
         // Récupération de tous les produits depuis la base de données
         $entityManager = $this->getDoctrine()->getManager();
         $locataire = $entityManager->getRepository(Locataire::class)->find($id);
@@ -161,12 +232,12 @@ class LocataireController extends AbstractController
 
         $repository = $entityManager->getRepository(Appartement::class);
 
-        $appartement = $repository->findBy(['idStrLocataires' => $id]);
+        $appartement = $repository->findBy(['id_str_locataires' => $id]);
 
         if (!$appartement) {
             $appartement = '';
         }
-        $appartementvalide = $repository->findBy(['idStrLocataires' => $id , 'etat' => 2]);
+        $appartementvalide = $repository->findBy(['id_str_locataires' => $id , 'etat' => 2]);
 
         if (!$appartementvalide) {
             $appartementvalide = '';
@@ -189,6 +260,8 @@ class LocataireController extends AbstractController
         }
 
 
+
+
    
 
         $repository = $entityManager->getRepository(Paiement::class);
@@ -207,6 +280,136 @@ class LocataireController extends AbstractController
             $paiement = '';
         }
 
+        $message = '';
+
+        if ($appartementvalide) {
+           $i = 0 ; 
+           $soldes = '';
+           $ajout = false;
+
+            foreach ($appartementvalide as $app) {
+                $i += 1 ; 
+                $repository = $entityManager->getRepository(Soldes::class);
+                $soldesbis = $repository->findBy(['id_locataire' => $id]);
+                
+                if ($soldesbis) {
+                    // return new Response('je suis dans soldebis');
+
+                    foreach ($soldesbis as $sol ) {
+                        $message = $message .  '<br> sol id app == ' . $sol->getIdAppartement() . ' app id ==  '. $app->getId();
+                        if ($sol->getIdAppartement() == $app->getId()) {
+                            //  return new Response('je suis dans id appart == ap    ' . $i);
+                            break;
+                            $message = $message . ' <br>  oui   <br>  ';
+
+                        }
+                        else {
+                            $message = $message . ' <br>  non  <br> ';
+
+                            $ajout = true;
+
+                            // $soldes = new Soldes();
+                            // $entityManager = $this->getDoctrine()->getManager();
+                            // $soldes->setIdLocataire($app->getIdStrLocataires());
+                            // $soldes->setIdAppartement($app->getId());
+            
+                            
+                            // foreach ($etatLieux as $ett ) {
+                            //    if ($ett->getIdLocataire() == $app->getIdStrLocataires() && $ett->getIdAppartement() == $app->getId() && $ett->getQuand() == 'entree') {
+                            //         $soldes->setDateEntree($ett->getDate());
+            
+                            //         $date1 = new DateTime('2023-06-29');
+                            //         $date2 = $ett->getDate();
+            
+                            //         $interval = $date1->diff($date2);
+            
+                            //         $nb_mois = $interval->format('%m');
+            
+                            //         $somme = 0;
+            
+                            //         $somme += $app->getLoyer() * $nb_mois;
+            
+            
+            
+                            //         $soldes->setSomme($somme);
+            
+                            //    }
+                            // }
+                            
+                           
+
+                        }
+                        if ($ajout == true) {
+                            $ajout = false;
+                            break;
+                         }
+                    }
+                    
+
+                   
+                   
+                    
+                }
+                else {
+                    $soldes = new Soldes();
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $soldes->setIdLocataire($app->getIdStrLocataires());
+                    $soldes->setIdAppartement($app->getId());
+    
+                    
+                    foreach ($etatLieux as $ett ) {
+                       if ($ett->getIdLocataire() == $app->getIdStrLocataires() && $ett->getIdAppartement() == $app->getId() && $ett->getQuand() == 'entree') {
+                            $soldes->setDateEntree($ett->getDate());
+    
+                            $date1 = new DateTime('2023-06-29');
+                            $date2 = $ett->getDate();
+    
+                            $interval = $date1->diff($date2);
+    
+                            $nb_mois = $interval->format('%m');
+    
+                            $somme = 0;
+    
+                            $somme += $app->getLoyer() * $nb_mois;
+    
+    
+    
+                            $soldes->setSomme($somme);
+    
+                       }
+                    }
+                    
+
+                    // return new Response('je suis ne suis pas dans solde bis');
+
+                }
+
+           
+                
+                if ($soldes) {
+                    $entityManager->persist($soldes);
+                    $entityManager->flush();
+                }
+
+               
+                    $ajout = false; 
+                
+            }
+            // return new Response('i = ' . $i);
+            // return new Response( '' .$message);
+
+        }
+
+        $repository = $entityManager->getRepository(Soldes::class);
+
+        $soldes = $repository->findBy(['id_locataire' => $id]);
+
+
+        if (!$soldes) {
+            $soldes = '';
+        }
+
+
 
 
 
@@ -219,6 +422,9 @@ class LocataireController extends AbstractController
             'etatLieux' => $etatLieux,
             'depotGarantie' => $depotGarantie,
             'paiement' => $paiement,
+            'user' => $user,
+            'soldes' => $soldes,
+
         ]);
     }
 
@@ -270,6 +476,33 @@ class LocataireController extends AbstractController
             $entityManager->persist($paiement);
             $entityManager->flush();
 
+          
+            $entityManager = $this->getDoctrine()->getManager();
+            $query = $entityManager->createQueryBuilder()
+                ->select('s.id, s.somme, s.id_locataire, s.id_appartement')
+                ->from(Soldes::class, 's')
+                ->where('s.id_locataire = :id and s.id_appartement = :id_app')
+                ->setParameter('id', $id_locataire)
+                ->setParameter('id_app', $appartement)
+                ->getQuery();
+
+                $soldesid = $query->getOneOrNullResult();
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $soldes = $entityManager->getRepository(Soldes::class)->find($soldesid['id']);
+            
+            // Vérification que l'entité existe
+            if (!$soldes) {
+                throw $this->createNotFoundException('Aucune entité trouvée pour cet id : ');
+            }
+            
+            // Mise à jour de l'entité
+            $val = $soldes->getSomme();
+            $soldes->setSomme($val-$paiement->getSomme());
+            
+            // Enregistrement des modifications dans la base de données
+            $entityManager->flush();
+    
             
             return $this->redirectToRoute('fiche-locataire', ['id' => $id_locataire]);
 
@@ -311,18 +544,58 @@ class LocataireController extends AbstractController
             $paiement = $entityManager->getRepository(Paiement::class)->find($id_paiement);
 
 
+
+            $oldSomme = $paiement->getSomme();
+
+
             // Définir les valeurs des champs
             $paiement->setSomme($somme);
             $paiement->setDate($date);
             $paiement->setEmmeteur($emmeteur);
             $paiement->setIdAppartement($appartement);
             $paiement->setIdLocataire($id_locataire);
+
+
+            $newSomme = $paiement->getSomme();
             
            
 
 
             $entityManager->persist($paiement);
             $entityManager->flush();
+
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $query = $entityManager->createQueryBuilder()
+                ->select('s.id, s.somme, s.id_locataire, s.id_appartement')
+                ->from(Soldes::class, 's')
+                ->where('s.id_locataire = :id and s.id_appartement = :id_app')
+                ->setParameter('id', $id_locataire)
+                ->setParameter('id_app', $paiement->getIdAppartement())
+                ->getQuery();
+
+                $soldesid = $query->getOneOrNullResult();
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $soldes = $entityManager->getRepository(Soldes::class)->find($soldesid['id']);
+            
+            // Vérification que l'entité existe
+            if (!$soldes) {
+                throw $this->createNotFoundException('Aucune entité trouvée pour cet id : ');
+            }
+            
+            // Mise à jour de l'entité
+            $val = $soldes->getSomme();
+            $soldes->setSomme($val+$oldSomme);
+
+            $val2 = $soldes->getSomme();
+            $soldes->setSomme($val2 - $newSomme);
+            
+            // Enregistrement des modifications dans la base de données
+            $entityManager->flush();
+
+
+
 
             
             return $this->redirectToRoute('fiche-locataire', ['id' => $id_locataire]);
@@ -342,10 +615,38 @@ class LocataireController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $paiement = $entityManager->getRepository(Paiement::class)->find($id_paiement);
 
-          
+          $remSomme = $paiement->getSomme();
 
             $entityManager->remove($paiement);
             $entityManager->flush();
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $query = $entityManager->createQueryBuilder()
+                ->select('s.id, s.somme, s.id_locataire, s.id_appartement')
+                ->from(Soldes::class, 's')
+                ->where('s.id_locataire = :id and s.id_appartement = :id_app')
+                ->setParameter('id', $id_locataire)
+                ->setParameter('id_app', $paiement->getIdAppartement())
+                ->getQuery();
+
+                $soldesid = $query->getOneOrNullResult();
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $soldes = $entityManager->getRepository(Soldes::class)->find($soldesid['id']);
+            
+            // Vérification que l'entité existe
+            if (!$soldes) {
+                throw $this->createNotFoundException('Aucune entité trouvée pour cet id : ');
+            }
+            
+            // Mise à jour de l'entité
+            $val = $soldes->getSomme();
+            $soldes->setSomme($val+$remSomme);
+            
+            // Enregistrement des modifications dans la base de données
+            $entityManager->flush();
+
+
 
 
 

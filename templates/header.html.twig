@@ -1,4 +1,4 @@
-<header>
+{# <header>
   <nav>
       <ul>
           <li><a href="{{ path('test') }}">Accueil</a></li>
@@ -6,4 +6,77 @@
           <li><a href="{{ path('liste-appartement') }}">Appartement</a></li>
       </ul>
   </nav>
-</header>
+</header> #}
+
+<div class="">
+
+	<div class="">
+
+		<div class="navbar navbar-expand-sm navbar-main navbar-dark bg-dark  pr-0">
+
+    {% if user !='' %}
+    
+			<ul class="nav navbar-nav d-none d-sm-flex border-left navbar-border navbar-height align-items-center">
+				<li class=" dropdown">
+					<a href="#account_menu" class="nav-link dropdown-toggle text-center" data-toggle="dropdown">
+						<span class="text-center">
+							<span class="rounded-circle bg-gold p-2 text-center">
+                  <i class="fas fa-user"></i>
+							</span>
+						</span>
+					</a>
+					<div id="account_menu" class="dropdown-menu dropdown-menu-right">
+						<div class="dropdown-item-text ">
+							<div>
+								<strong>{{user.email}}</strong>
+							</div>
+						</div>
+
+						<a class="dropdown-item" href="/logout" onclick="return myFunction()">
+							<i class="fas fa-sign-out-alt"></i>
+							<span>Se déconnecter</span>
+						</a>
+
+					</div>
+				</li>
+			</ul>
+      {% endif %}
+
+			<div
+				class="container-fluid p-0">
+
+				<!-- Navbar toggler -->
+
+				<button class="navbar-toggler navbar-toggler-right d-block d-md-none" type="button" data-toggle="sidebar">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+
+				<div class="text-center p-2">
+					<a href="/dashboard" class="navbar-brand text-center ">
+						INFECO
+					</a>
+
+				</div>
+				<!-- Navbar Brand -->
+
+
+				<span class="mr-3"></span>
+
+
+				<div class="search-form d-none d-xl-flex flex mr-3">
+					<ul class="inline">
+						<li><a href="{{path('dashboard')}}">Accueil</a></li>
+						<li><a href="{{path('liste-locataire')}}">Locataires</a></li>
+						<li><a href="{{path('liste-appartement')}}">Appartement</a></li>
+					</ul>
+				</div>
+
+				<div class=""></div>
+
+
+			</div>
+		</div>
+
+	</div>
+</div>

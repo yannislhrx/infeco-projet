@@ -1,47 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste appartements{% endblock %}
+{% block title %}Liste appartements
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: red; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1> Modifier appartement</h1>
-
-    {{dump(appartement)}}
 
 
- (}{wVJtJ7DPD
-
- 
-
-  <form method="post" action="/modifier-appartement/{{appartement.id}}">
-     <label for="adresse">adresse</label>
-    <input type="text" name="adresse" id="adresse" value="{{appartement.adresse}}" required>
-
-    <label for="complement">complement</label>
-    <input type="text" name="complement" id="complement" value="{{appartement.complement}}" >
-
-    <label for="ville ">Ville</label>
-    <input type="text" name="ville" id="ville" value="{{appartement.ville}}" required>
-
-    <label for="code_postal">Code Postal</label>
-    <input type="text" name="code_postal" id="code_postal" value="{{appartement.codePostal}}" required>
+	<div class="container">
 
 
-    <label for="loyer">Loyer</label>
-    <input type="number" min="0" name="loyer" id="loyer" value="{{appartement.loyer}}" required>
+		<div class="card shadow-lg  mb-5 bg-body mt-5">
+			<div class="card-header">
 
-    <label for="charges">charges</label>
-    <input type="number" min="0" name="charges" id="charges" value="{{appartement.charges}}" required>
+				<h1>
+					Modifier appartement</h1>
 
-    
-       <button type="submit" value="1" name="modifierAppartement">Modifier</button>
-  </form>
-    
 
-</div>
+			</div>
+			<div class="card-body media align-items-center  row p-5">
+
+
+				<form method="post" action="/modifier-appartement/{{appartement.id}}" class="mt-3 row  g-3">
+					<label for="adresse" class="form-label">Adresse</label>
+					<input type="text" name="adresse" id="adresse" value="{{appartement.adresse}}" class="form-control" required>
+
+					<label for="complement" class="form-label">complement</label>
+					<input type="text" name="complement" id="complement" value="{{appartement.complement}}" class="form-control">
+
+					<label for="ville " class="form-label">Ville</label>
+					<input type="text" name="ville" id="ville" value="{{appartement.ville}}" class="form-control" required>
+
+					<label for="code_postal" class="form-label">Code Postal</label>
+					<input type="text" name="code_postal" id="code_postal" value="{{appartement.codePostal}}" class="form-control" required>
+
+
+					<label for="loyer" class="form-label">Loyer</label>
+					<input type="number" min="0" name="loyer" id="loyer" value="{{appartement.loyer}}" class="form-control" required>
+
+					<label for="charges" class="form-label">charges</label>
+					<input type="number" min="0" name="charges" id="charges" value="{{appartement.charges}}" class="form-control" required>
+
+
+					<button type="submit" value="1" name="modifierAppartement" class="btn btn-success mt-3">Modifier</button>
+				</form>
+
+
+			</div>
+		</div>
+	</div>
 {% endblock %}

@@ -52,5 +52,69 @@ a:hover {
     font-weight: bold;
 }
 
+.bg-gold {
+    background: #e3aa75;
+}
+
+.inline li {
+    display: inline;
+    margin-right: 50px;
+    font-size: 25px;
+}
+.inline li a{
+    color: white;
+}
+
+.card-dash {
+    padding: 50px;
+  }
+  .card-dash-gray {
+    background: rgba(147, 159, 173, 1) !important;
+  }
+  .card-dash-gray:hover {
+  background-color: rgba(147, 159, 173, 0.5) !important;
+  }
+  .card-dash-blue {
+    background: rgba(75, 152, 207, 1) !important;
+  }
+  .card-dash-blue:hover {
+  background-color: rgba(75, 152, 207, 0.5) !important;
+  }
+  .card-dash-green {
+    background: rgba(78, 180, 165, 1) !important;
+  }
+  .card-dash-green:hover {
+  background-color: rgba(78, 180, 165, 0.5) !important;
+  }
+  
+  .card-dash-orange {
+    background: rgba(243, 146, 0, 1) !important;
+  }
+  .card-dash-orange:hover {
+  background-color: rgba(243, 146, 0, 0.5) !important;
+  }
+  .card-dash-violine {
+    background: rgba(238,130,238,1) !important;
+  }
+  .card-dash-violine:hover {
+  background-color:rgba(238,130,238,0.5) !important;
+  }
+  .card-dash-turquoise {
+    background: rgba(0, 170, 174, 1) !important;
+  }
+  .card-dash-turquoise:hover {
+  background-color:rgba(0, 170, 174, 0.5) !important;
+  }
+  
+  .card-dash .icon-circle {
+    font-size: 30px;
+    color: white;
+  }
+  
+  .card-dash .title h5 {
+    color: white;
+  }
+
+
 
 

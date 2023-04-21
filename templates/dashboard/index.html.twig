@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+	<div class="container">
+
+		<div class="mt-5 mb-5 ">
+			<h1>
+				Dashboard
+			</h1>
+
+
+		</div>
+
+
+		<div class="row">
+
+
+			<div class="col-lg-3 col-md-4 mt-3">
+				<div class="card  shadow-sm  card-dash card-dash-blue">
+					<a href="/liste-locataire" class="text-center">
+						<div class="pb-4 title">
+							<h5>Liste Locataire</h5>
+						</div>
+						<div class="">
+							<span class="icon-circle text-center">
+								<i class="fas fa-user-group"></i>
+							</span>
+						</div>
+				    </a>
+                </div>
+			</div>
+
+			<div class="col-lg-3 col-md-4 mt-3">
+				<div class="card  shadow-sm  card-dash card-dash-violine">
+					<a href="/liste-appartement" class="text-center">
+						<div class="pb-4 title">
+							<h5>Liste Appartement</h5>
+						</div>
+						<div class="">
+							<span class="icon-circle text-center">
+								<i class="fas fa-building"></i>
+							</span>
+						</div>
+				    </a>
+                </div>
+			</div>
+
+			<div class="col-lg-3 col-md-4 mt-3">
+				<div class="card  shadow-sm  card-dash card-dash-green">
+					<a href="/ajout-locataire" class="text-center">
+						<div class="pb-4 title">
+							<h5>Ajout Locataire</h5>
+						</div>
+						<div class="">
+							<span class="icon-circle text-center">
+								<i class="fas fa-user-plus"></i>
+							</span>
+						</div>
+				    </a>
+                </div>
+			</div>
+			<div class="col-lg-3 col-md-4 mt-3">
+				<div class="card  shadow-sm  card-dash card-dash-gray">
+					<a href="/ajout-appartement" class="text-center">
+						<div class="pb-4 title">
+							<h5>Ajout Appartement</h5>
+						</div>
+						<div class="">
+							<span class="icon-circle text-center">
+								<i class="far fa-building"></i>
+							</span>
+						</div>
+				    </a>
+                </div>
+			</div>
+
+
+		</div>
+
+        </div>
+   
+	{% endblock %}

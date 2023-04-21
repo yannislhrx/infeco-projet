@@ -18,7 +18,7 @@ class Appartement
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="string", length=255)
      */
     private $adresse;
 
@@ -43,25 +43,24 @@ class Appartement
     private $loyer;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="integer")
      */
     private $charges;
 
     /**
-     * @ORM\Column(type="integer",nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $idAgence;
+    private $id_agence;
 
     /**
-     * @ORM\Column(type="string",nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $idStrLocataires;
+    private $id_str_locataires;
+
     /**
-     * @ORM\Column(type="integer",nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $etat;
-
-
 
     public function getId(): ?int
     {
@@ -128,12 +127,12 @@ class Appartement
         return $this;
     }
 
-    public function getCharges(): ?float
+    public function getCharges(): ?int
     {
         return $this->charges;
     }
 
-    public function setCharges(float $charges): self
+    public function setCharges(int $charges): self
     {
         $this->charges = $charges;
 
@@ -142,32 +141,34 @@ class Appartement
 
     public function getIdAgence(): ?int
     {
-        return $this->idAgence;
+        return $this->id_agence;
     }
 
-    public function setIdAgence(int $idAgence): self
+    public function setIdAgence(?int $id_agence): self
     {
-        $this->idAgence = $idAgence;
+        $this->id_agence = $id_agence;
 
         return $this;
     }
+
     public function getIdStrLocataires(): ?string
     {
-        return $this->idStrLocataires;
+        return $this->id_str_locataires;
     }
 
-    public function setIdStrLocataires(string $idStrLocataires): self
+    public function setIdStrLocataires(?string $id_str_locataires): self
     {
-        $this->idStrLocataires = $idStrLocataires;
+        $this->id_str_locataires = $id_str_locataires;
 
         return $this;
     }
-    public function getEtat(): ?string
+
+    public function getEtat(): ?int
     {
         return $this->etat;
     }
 
-    public function setEtat(string $etat): self
+    public function setEtat(?int $etat): self
     {
         $this->etat = $etat;
 

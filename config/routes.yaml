@@ -6,16 +6,16 @@ test:
     path: /test
     controller: App\Controller\TestController::index
 
-    
-dashboard:
-    path: /
-    controller: App\Controller\AppartementController::getAppartements
 
 # app_login_index:
 #     path: /
 #     controller: App\Controller\SecurityController::login
 app_login:
     path: /login
+    controller: App\Controller\LoginController::index
+    
+app_login-index:
+    path: /
     controller: App\Controller\LoginController::index
 
 app_logout:
@@ -132,6 +132,14 @@ delete-paiement:
 quittance-loyer: 
   path: /quittance-loyer/{id_paiement}&{id_locataire}
   controller: App\Controller\LocataireController::quittanceLoyer
+
+dashboard: 
+  path: /dashboard
+  controller: App\Controller\DashboardController::index
+
+# dashboard-index: 
+#   path: /
+#   controller: App\Controller\DashboardController::index
 
 
 

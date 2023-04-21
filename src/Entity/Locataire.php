@@ -95,12 +95,12 @@ class Locataire
         return $this;
     }
 
-    public function getid_agence(): ?int
+    public function getIdAgence(): ?int
     {
         return $this->id_agence;
     }
 
-    public function setid_agence(int $id_agence): self
+    public function setIdAgence(?int $id_agence): self
     {
         $this->id_agence = $id_agence;
 

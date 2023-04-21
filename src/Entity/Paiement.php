@@ -36,6 +36,7 @@ class Paiement
      * @ORM\Column(type="integer")
      */
     private $id_appartement;
+
     /**
      * @ORM\Column(type="integer")
      */
@@ -93,6 +94,7 @@ class Paiement
 
         return $this;
     }
+
     public function getIdLocataire(): ?int
     {
         return $this->id_locataire;

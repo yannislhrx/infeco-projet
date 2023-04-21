@@ -41,8 +41,9 @@ class EtatLieux
      * @ORM\Column(type="integer", nullable=true)
      */
     private $id_appartement;
+
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $etat;
 
@@ -56,7 +57,7 @@ class EtatLieux
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
 
@@ -80,7 +81,7 @@ class EtatLieux
         return $this->quand;
     }
 
-    public function setQuand(string $quand): self
+    public function setQuand(?string $quand): self
     {
         $this->quand = $quand;
 
@@ -92,7 +93,7 @@ class EtatLieux
         return $this->id_locataire;
     }
 
-    public function setIdLocataire(int $id_locataire): self
+    public function setIdLocataire(?int $id_locataire): self
     {
         $this->id_locataire = $id_locataire;
 
@@ -104,19 +105,19 @@ class EtatLieux
         return $this->id_appartement;
     }
 
-    public function setIdAppartement(int $id_appartement): self
+    public function setIdAppartement(?int $id_appartement): self
     {
         $this->id_appartement = $id_appartement;
 
         return $this;
     }
 
-    public function getEtat(): ?string
+    public function getEtat(): ?int
     {
         return $this->etat;
     }
 
-    public function setEtat(string $etat): self
+    public function setEtat(?int $etat): self
     {
         $this->etat = $etat;
 

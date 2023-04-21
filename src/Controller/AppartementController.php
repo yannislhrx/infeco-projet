@@ -14,12 +14,22 @@ use App\Form\AjoutAppartementType;
 use App\Form\AjoutLocataireToAppartementType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 
 
 
 class AppartementController extends AbstractController
 {
+
+    private $tokenStorage;
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+
+
     /**
      * @Route("/appartement", name="app_appartement")
      */
@@ -32,27 +42,63 @@ class AppartementController extends AbstractController
 
     public function getAppartements(): Response {
 
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
+
         // Récupération de tous les produits depuis la base de données
         $repository = $this->getDoctrine()->getRepository(Appartement::class);
-        $appartements = $repository->findAll();
+        // $appartements = $repository->findAll();
+        $appartements = $repository->findBy(['id_agence' => $user->getId()]);
 
         return $this->render('administration/liste-appartement.html.twig', [
             'appartements' => $appartements,
+            'user' => $user,
         ]);
     }
 
     public function pageAjoutAppartement(): Response {
 
         // Récupération de tous les produits depuis la base de données
-       
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
 
         return $this->render('administration/ajout-appartement.html.twig', [
-            
+            'user' => $user,
+
         ]);
     }
 
     public function create(Request $request)
     {
+
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
+
+
         $entity = new Appartement();
         $form = $this->createForm(AjoutAppartementType::class, $entity);
 
@@ -60,6 +106,7 @@ class AppartementController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $entity->setIdAgence($user->getId());
             $entityManager->persist($entity);
             $entityManager->flush();
 
@@ -70,6 +117,8 @@ class AppartementController extends AbstractController
 
         return $this->render('administration/ajout-appartement.html.twig', [
             'form' => $form->createView(),
+            'user' => $user,
+
         ]);
     }
 
@@ -106,7 +155,7 @@ class AppartementController extends AbstractController
             );
         }
     
-        $appartement->setIdStrLocataires('');
+        $appartement->setIdStrLocataires(null);
         $entityManager->flush();
     
         return $this->redirectToRoute('fiche-appartement', ['id' => $id]);
@@ -115,6 +164,19 @@ class AppartementController extends AbstractController
 
     public function modifierAppartement($id, Request $request)
     {
+
+         // Récupération du jeton de sécurité courant
+         $token = $this->tokenStorage->getToken();
+
+         // Vérification si l'utilisateur est authentifié
+         if (!$token || !$token->isAuthenticated()) {
+             throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+         }
+ 
+         // Récupération de l'utilisateur courant
+         $user = $token->getUser();
+
+
         $entityManager = $this->getDoctrine()->getManager();
         $appartement = $entityManager->getRepository(Appartement::class)->find($id);
     
@@ -178,15 +240,30 @@ class AppartementController extends AbstractController
     
         return $this->render('administration/modifier-appartement.html.twig', [
             'appartement' => $appartement,
+            'user' => $user,
+
             
         ]);
     }
 
     public function ficheAppartement($id,Request $request): Response {
+
+          // Récupération du jeton de sécurité courant
+          $token = $this->tokenStorage->getToken();
+
+          // Vérification si l'utilisateur est authentifié
+          if (!$token || !$token->isAuthenticated()) {
+              throw new \LogicException('L\'utilisateur n\'est pas authentifié.');
+          }
+  
+          // Récupération de l'utilisateur courant
+          $user = $token->getUser();
         
         // Récupération de tous les produits depuis la base de données
         $repository = $this->getDoctrine()->getRepository(Locataire::class);
-        $locataires = $repository->findAll();
+        // $locataires = $repository->findAll();
+        $locataires = $repository->findBy(['id_agence' => $user->getId()]);
+
 
         // Récupération de tous les produits depuis la base de données
         $entityManager = $this->getDoctrine()->getManager();
@@ -215,7 +292,7 @@ class AppartementController extends AbstractController
 
           $entityManager = $this->getDoctrine()->getManager();
             $query = $entityManager->createQueryBuilder()
-                ->select('u.idStrLocataires')
+                ->select('u.id_str_locataires')
                 ->from(Appartement::class, 'u')
                 ->where('u.id = :id')
                 ->setParameter('id', $id)
@@ -354,6 +431,8 @@ class AppartementController extends AbstractController
             'etatDesLieuxS' => $etatDesLieuxS,
             'depotGarantie' => $depotGarantie,
             'paiement'      => $paiement,
+            'user' => $user,
+
         ]);
     }
 
@@ -780,10 +859,10 @@ class AppartementController extends AbstractController
             }
 
             
-            $appartement->setIdStrLocataires('') ;
+            $appartement->setIdStrLocataires(null) ;
             $entityManager->flush();
 
-
+        // return new Response('Hello ');
 
             return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
 
@@ -801,7 +880,7 @@ class AppartementController extends AbstractController
                 $depot->setEtat(0);
                 $entityManager->flush();
             }
-            $appartement->setIdStrLocataires('') ;
+            $appartement->setIdStrLocataires(null) ;
             $entityManager->flush();
 
             return $this->redirectToRoute('fiche-appartement', ['id' => $id_appartement]);
